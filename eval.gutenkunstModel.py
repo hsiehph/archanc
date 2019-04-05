@@ -18,24 +18,31 @@ import pandas as pd
 import math
 
 def add_mnms(ts, model_label, output_dir="./", rep_label=0, mnm_dist=100, mnm_frac=0.015):
-    
-    prefix = model_label + "_mnm" + str(mnm_dist) + "-" + str(mnm_frac) + "_" + str(rep_label)
-    
+
+    if mnm_frac != -100:
+        prefix = model_label + "_mnm" + str(mnm_dist) + "-" + str(mnm_frac) + "_" + str(rep_label)
+    else:
+        prefix = model_label + "_womnm"
+
     mnm_dict = {}
 
     header = ["#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT"]
 
+    dict_IDs = {}
     l_IDs = []
     for popID in ["AFR", "EUR", "EA"]:
+        dict_IDs[popID] = []
         for indID in range(50):
+            dict_IDs[popID].append("%s_ind%s" % (popID, indID))
             l_IDs.append("%s_ind%s" % (popID, indID))
 
     header.extend(l_IDs)
 
     if rep_label == str(0):
-        with open(output_dir + prefix + ".indID", "w") as text_file:
-            for indID in l_IDs:
-                text_file.write(indID + "\n")
+        for popID in ["AFR", "EUR", "EA"]:
+            with open("%s%s.%s.indID" % (output_dir, model_label, popID), "w") as text_file:
+                for indID in dict_IDs[popID]:
+                    text_file.write(indID + "\n")
 
     with open(output_dir + prefix + ".vcf", "w") as text_file:
         text_file.write("\t".join(header) + "\n") 
@@ -49,7 +56,9 @@ def add_mnms(ts, model_label, output_dir="./", rep_label=0, mnm_dist=100, mnm_fr
 
             random.seed(variant.site.position)
             if random.random() < mnm_frac:
-                dist = random.randint(1,mnm_dist)
+                # make sure a mnm is at least 10bp from its counterpart.
+                # this is to avoid the internal filter of Sprime.
+                dist = random.randint(10, mnm_dist)
                 mnm_cand = variant.site.position + dist 
                 mnm_cand_r = str(round(mnm_cand))
                 snv = ["1", str(mnm_cand_r), "1_%s" % mnm_cand_r, "A", "G", "50", "PASS", "VT=MNM", "GT"] 
@@ -58,64 +67,47 @@ def add_mnms(ts, model_label, output_dir="./", rep_label=0, mnm_dist=100, mnm_fr
 
 
 
-# ## Simulate models
-# 
-# Simulate 150 samples (50 for each of African, European, and EA ancestry) under each of the specified models (with 1 sample)
-
-
-
-# coalescent simulation parameters
-sample_size = 100 #haploid, each pop
-length = 50000
-mu = 1.15e-8
-rr = 1e-8
-seed = 30
-
-# Gutenkunst 3-population model
-GutenkunstThreePop_model = homo_sapiens.GutenkunstThreePopOutOfAfrica()
-GutenkunstThreePop_ts = msprime.simulate(
-    # first 100 haploid samples from AFR, next 100 from EUR, followed by another 100 from EA
-    samples=[msprime.Sample(0, 0)]*sample_size + [msprime.Sample(1, 0)]*sample_size + [msprime.Sample(2, 0)]*sample_size,
-    length=length, 
-    mutation_rate=mu, 
-    recombination_rate=rr,
-    random_seed=seed,
-    num_replicates=replicates,
-    **GutenkunstThreePop_model.asdict())
-
-
-
-model_dict = {"GutenkunstThreePop": GutenkunstThreePop_ts}
-#             "TennessenTwoPop": TennessenTwoPop_ts}
-
-
-# ## Add MNMs
-# Loop through models/replicates and randomly generate MNMs.
-
-run_archie = False
-
 if __name__ == "__main__":
 
-    
-    replicates = sys.argv[1]
+    replicates = int(sys.argv[1])
 
-    # MNM simulation parameters
-    try:
-        print("Simulating with MNMs on " + model_label)
-        mnm_dist = sys.argv[2]
-        mnm_frac = sys.argv[3]
-    except IndexError:
-        print("Simulating without MNMs on " + model_label)
-        mnm_dist = 100
-        mnm_frac = -100
+    # ## Simulate models
+    # Simulate 150 samples (50 for each of African, European, and EA ancestry) under each of the specified models (with 1 sample)
+    # coalescent simulation parameters
+    sample_size = 100 #haploid, each pop
+    length = 50000
+    mu = 1.15e-8
+    rr = 1e-8
+    seed = 30
+
+    # Gutenkunst 3-population model
+    GutenkunstThreePop_model = homo_sapiens.GutenkunstThreePopOutOfAfrica()
+    GutenkunstThreePop_ts = msprime.simulate(
+        # first 100 haploid samples from AFR, next 100 from EUR, followed by another 100 from EA
+        samples=[msprime.Sample(0, 0)]*sample_size + [msprime.Sample(1, 0)]*sample_size + [msprime.Sample(2, 0)]*sample_size,
+        length=length, 
+        mutation_rate=mu, 
+        recombination_rate=rr,
+        random_seed=seed,
+        num_replicates=replicates,
+        **GutenkunstThreePop_model.asdict())
+
+    model_dict = {"GutenkunstThreePop": GutenkunstThreePop_ts}
+    #             "TennessenTwoPop": TennessenTwoPop_ts}
 
 
     for model_label, model in model_dict.items():
-        
-        
-        for j, ts in enumerate(model):
+        # MNM simulation parameters
+        try:
+            mnm_dist = float(sys.argv[2])
+            mnm_frac = float(sys.argv[3])
+            print("Simulating with MNMs on " + model_label)
+        except IndexError:
+            mnm_dist = 100
+            mnm_frac = -100
+            print("Simulating without MNMs on " + model_label)
 
-            prefix = model_label + "_mnm" + str(mnm_dist) + "-" + str(mnm_frac) + "_"
+        for j, ts in enumerate(model):
 
             # add MNMs and output results
             add_mnms(ts, 

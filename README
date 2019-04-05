@@ -1,6 +1,13 @@
 
 source activate py37
 
+
+# simulate without MNMs
+python eval.gutenkunstModel.py 1
+
+# simulate with MNMs
+python eval.gutenkunstModel.py 1 100 0.015
+
 java -jar src/sprime/sprime.jar gt=output/msprime/GutenkunstThreePop_mnm100-0.015_0.vcf outgroup=output/msprime/GutenkunstThreePop_mnm100-0.015_0.outgrp.ind map=src/sprime/recombination.1e-8_50kbp.map out=sprime.out excludesamples=output/msprime/GutenkunstThreePop_mnm100-0.015_0.EA.ind minscore=1
 
 
