@@ -38,7 +38,7 @@ def add_mnms(ts, model_label, output_dir="./", rep_label=0, mnm_dist=100, mnm_fr
 
     header.extend(l_IDs)
 
-    if rep_label == str(0):
+    if rep_label == str(1):
         for popID in ["AFR", "EUR", "EA"]:
             with open("%s%s.%s.indID" % (output_dir, model_label, popID), "w") as text_file:
                 for indID in dict_IDs[popID]:
@@ -69,16 +69,17 @@ def add_mnms(ts, model_label, output_dir="./", rep_label=0, mnm_dist=100, mnm_fr
 
 if __name__ == "__main__":
 
-    replicates = int(sys.argv[1])
+    replicateID = int(sys.argv[1])
 
     # ## Simulate models
     # Simulate 150 samples (50 for each of African, European, and EA ancestry) under each of the specified models (with 1 sample)
     # coalescent simulation parameters
+    replicates = 1
     sample_size = 100 #haploid, each pop
     length = 50000
     mu = 1.15e-8
     rr = 1e-8
-    seed = 30
+    seed = replicateID
 
     # Gutenkunst 3-population model
     GutenkunstThreePop_model = homo_sapiens.GutenkunstThreePopOutOfAfrica()
@@ -115,5 +116,5 @@ if __name__ == "__main__":
                      model_label=model_label, 
                      mnm_dist=mnm_dist, 
                      mnm_frac=mnm_frac, 
-                     rep_label=str(j))
+                     rep_label=str(replicateID))
 
