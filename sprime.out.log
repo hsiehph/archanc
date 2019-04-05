@@ -1,0 +1,27 @@
+sprime.jar(version: 07Dec18.5e2)
+Copyright (C) 2017 Brian L. Browning
+Enter "java -jar sprime.jar" to print a list ofcommand line arguments
+
+Start time: 10:10 PM PDT on 04 Apr 2019
+
+Command line: java -Xmx3641m -jar sprime.jar
+  gt=output/msprime/GutenkunstThreePop_mnm100-0.015_0.vcf
+  outgroup=output/msprime/GutenkunstThreePop_mnm100-0.015_0.outgrp.ind
+  map=src/sprime/recombination.1e-8_50kbp.map
+  out=sprime.out
+  excludesamples=output/msprime/GutenkunstThreePop_mnm100-0.015_0.EA.ind
+  minscore=1
+
+WARNING: The input VCF file contains only one chromosome.
+All autosomes must be included in the input VCF file in
+order for SPrime to estimate a genomewide variant density.
+
+Number of outgroup samples:      50
+Number of target samples:        50
+Variant analyzed:                63
+Segments detected:               5
+Run time:                        0 seconds
+
+End time: 10:10 PM PDT on 04 Apr 2019
+
+sprime.jar finished
