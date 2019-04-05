@@ -22,7 +22,7 @@ def add_mnms(ts, model_label, output_dir="./", rep_label=0, mnm_dist=100, mnm_fr
     if mnm_frac != -100:
         prefix = model_label + "_mnm" + str(mnm_dist) + "-" + str(mnm_frac) + "_" + str(rep_label)
     else:
-        prefix = model_label + "_womnm"
+        prefix = model_label + "_womnm_%s" % str(rep_label)
 
     mnm_dict = {}
 
