@@ -15,7 +15,7 @@ import itertools
 import random
 import numpy as np
 import pandas as pd
-import math
+import math, time
 
 def add_mnms(ts, model_label, output_dir="./", rep_label=0, mnm_dist=100, mnm_frac=0.015):
 
@@ -28,23 +28,27 @@ def add_mnms(ts, model_label, output_dir="./", rep_label=0, mnm_dist=100, mnm_fr
 
     header = ["#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT"]
 
-    dict_IDs = {}
+#    dict_IDs = {}
     l_IDs = []
     for popID in ["AFR", "EUR", "EA"]:
-        dict_IDs[popID] = []
+#        dict_IDs[popID] = []
         for indID in range(50):
-            dict_IDs[popID].append("%s_ind%s" % (popID, indID))
+#            dict_IDs[popID].append("%s_ind%s" % (popID, indID))
             l_IDs.append("%s_ind%s" % (popID, indID))
 
     header.extend(l_IDs)
 
-    if rep_label == str(1):
-        for popID in ["AFR", "EUR", "EA"]:
-            with open("%s%s.%s.indID" % (output_dir, model_label, popID), "w") as text_file:
-                for indID in dict_IDs[popID]:
-                    text_file.write(indID + "\n")
+#
+#    if rep_label == str(1):
+#        for popID in ["AFR", "EUR", "EA"]:
+#            with open("%s%s.%s.indID" % (output_dir, model_label, popID), "w") as text_file:
+#                for indID in dict_IDs[popID]:
+#                    text_file.write(indID + "\n")
+#    else:
+#        time.sleep(5)
 
-    with open(output_dir + prefix + ".vcf", "w") as text_file:
+#    with open(output_dir + prefix + ".vcf", "w") as text_file:
+    with sys.stdout as text_file:
         text_file.write("\t".join(header) + "\n") 
 
         for variant in ts.variants():
