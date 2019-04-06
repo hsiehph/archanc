@@ -1,6 +1,14 @@
 
-source activate py37
+Final output sinaplot which compares Sprime scores between simulations with and without MNMs:
+	
+	output/sprime/GutenkunstThreePop/sinaplot_topSegment_wMNM_vs_woMNM.out.score.pdf 
 
+
+
+
+###############################
+# the following are for manually running the experiment
+source activate py37
 
 # simulate without MNMs
 python eval.gutenkunstModel.py 1
