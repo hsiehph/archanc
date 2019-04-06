@@ -106,11 +106,11 @@ if __name__ == "__main__":
         try:
             mnm_dist = float(sys.argv[2])
             mnm_frac = float(sys.argv[3])
-            print("Simulating with MNMs on " + model_label)
+            sys.stderr("Simulating with MNMs on " + model_label)
         except IndexError:
             mnm_dist = 100
             mnm_frac = -100
-            print("Simulating without MNMs on " + model_label)
+            sys.stderr("Simulating without MNMs on " + model_label)
 
         for j, ts in enumerate(model):
 
