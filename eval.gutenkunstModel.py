@@ -80,7 +80,7 @@ if __name__ == "__main__":
     # coalescent simulation parameters
     replicates = 1
     sample_size = 100 #haploid, each pop
-    length = 50000
+    length = float(sys.argv[2])
     mu = 1.15e-8
     rr = 1e-8
     seed = replicateID
@@ -104,8 +104,8 @@ if __name__ == "__main__":
     for model_label, model in model_dict.items():
         # MNM simulation parameters
         try:
-            mnm_dist = float(sys.argv[2])
-            mnm_frac = float(sys.argv[3])
+            mnm_dist = float(sys.argv[3])
+            mnm_frac = float(sys.argv[4])
             sys.stderr.write("Simulating with MNMs on " + model_label + "\n")
         except IndexError:
             mnm_dist = 100

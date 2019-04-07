@@ -1,11 +1,12 @@
 {
-	"modelNAME": "GutenkunstThreePop",
+	"modelNAME": "GutenkunstThreePop_1Mbp",
 	"MNM_dist": 100,
 	"MNM_frac": 0.015,
 	"replicates": 1000,
-	"GeneticMap": "src/sprime/recombination.1e-8_50kbp.map",
+	"GeneticMap": "src/sprime/recombination.1e-8_1Mbp.map",
 	"popIDs": ["AFR", "EUR", "EA"],
 	"outgrp" : "AFR",
 	"rmPopID": "EA",
-	"sampleSize": 50
+	"sampleSize": 50,
+	"segmentLength": 1000000
 }

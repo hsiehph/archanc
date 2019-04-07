@@ -17,7 +17,7 @@ popIDs = config["popIDs"]
 outgrp = config["outgrp"]
 rmPopID = config["rmPopID"]
 sampleSize = config["sampleSize"]
-
+segmentLength = config["segmentLength"]
 
 rule dummy:
 	input: 
@@ -54,7 +54,7 @@ rule pullTopSegment_woMNM:
 			"output/sprime/%s/%s_womnm_{replicate}.sprime.out.score.top" % (modelNAME, modelNAME)
 	params: sge_opts="-l h_rt=120:00:00 -l mfree=4G -l gpfsstate=0"
 	shell:
-		""" sort -n -r -k8 {input} | head -1 > {output} """
+		""" set +o pipefail ; sort -n -r -k8 {input} | head -1 > {output} """
 
 			
 rule mergeTopSegment_wMNM:
@@ -74,7 +74,7 @@ rule pullTopSegment_wMNM:
 			"output/sprime/%s/%s_mnm%s-%s_{replicate}.sprime.out.score.top" % (modelNAME, modelNAME, MNM_dist, MNM_frac)
 	params: sge_opts="-l h_rt=120:00:00 -l mfree=4G -l gpfsstate=0"
 	shell:
-		""" sort -n -r -k8 {input} | head -1 > {output} """
+		""" set +o pipefail ; sort -n -r -k8 {input} | head -1 > {output} """
 
 
 rule sprime_woMNM:
@@ -103,9 +103,9 @@ rule sim_woMNM:
 	params: sge_opts="-l h_rt=120:00:00 -l mfree=4G -l gpfsstate=0"
 	run:
 		if modelNAME == "GutenkunstThreePop":
-			shell(""" python eval.gutenkunstModel.py {wildcards.replicate} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' | vcftools --vcf - --remove output/msprime/%s/%s.%s.indID --recode --recode-INFO-all --stdout | bgzip -c > {output.vcf}""" % (modelNAME, modelNAME, rmPopID))
+			shell(""" python eval.gutenkunstModel.py {wildcards.replicate} {segmentLength} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' | vcftools --vcf - --remove output/msprime/%s/%s.%s.indID --recode --recode-INFO-all --stdout | bgzip -c > {output.vcf}""" % (modelNAME, modelNAME, rmPopID))
 		else:
-			shell(""" python eval.gutenkunstModel.py {wildcards.replicate} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' | bgzip -c > {output.vcf}""")
+			shell(""" python eval.gutenkunstModel.py {wildcards.replicate} {segmentLength} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' | bgzip -c > {output.vcf}""")
 
 
 rule sim_wMNM:
@@ -116,9 +116,9 @@ rule sim_wMNM:
 	params: sge_opts="-l h_rt=120:00:00 -l mfree=4G -l gpfsstate=0", 
 	run:
 		if modelNAME == "GutenkunstThreePop":
-			shell(""" python eval.gutenkunstModel.py {wildcards.replicate} {MNM_dist} {MNM_frac} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' | vcftools --vcf - --remove output/msprime/%s/%s.%s.indID --recode --recode-INFO-all --stdout | bgzip -c > {output.vcf}""" % (modelNAME, modelNAME, rmPopID) )
+			shell(""" python eval.gutenkunstModel.py {wildcards.replicate} {segmentLength} {MNM_dist} {MNM_frac} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' | vcftools --vcf - --remove output/msprime/%s/%s.%s.indID --recode --recode-INFO-all --stdout | bgzip -c > {output.vcf}""" % (modelNAME, modelNAME, rmPopID) )
 		else:
-			shell(""" python eval.gutenkunstModel.py {wildcards.replicate} {MNM_dist} {MNM_frac} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' | bgzip -c > {output.vcf}""")
+			shell(""" python eval.gutenkunstModel.py {wildcards.replicate} {segmentLength} {MNM_dist} {MNM_frac} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' | bgzip -c > {output.vcf}""")
 
 rule output_IDfiles:
 	output: 
